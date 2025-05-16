@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pathfinding Visualizer</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Pathfinding Visualizer</h1>
+            <div class="controls">
+                <button id="findPathBtn" class="btn primary">Find Path</button>
+                <button id="returnDefaultBtn" class="btn">Return Default</button>
+                <div class="speed-control">
+                    <label for="speed">Speed:</label>
+                    <select id="speed">
+                        <option value="slow">Slow</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="fast">Fast</option>
+                    </select>
+                </div>
+            </div>
+        </header>
+        
+        <main>
+            <div class="grid-container">
+                <div class="resize-button top" id="addTopRow">+</div>
+                <div class="resize-button bottom" id="addBottomRow">+</div>
+                <div class="resize-button left" id="addLeftCol">+</div>
+                <div class="resize-button right" id="addRightCol">+</div>
+                <div id="grid" class="grid"></div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Debug info -->
+    <div id="debug" style="display: none;"></div>
+
+    <!-- Load scripts -->
+    <script>
+        // Debug function
+        function debug(message) {
+            console.log(message);
+            const debugDiv = document.getElementById('debug');
+            if (debugDiv) {
+                debugDiv.innerHTML += message + '<br>';
+            }
+        }
+    </script>
+    <script src="js/Node.js"></script>
+    <script src="js/Grid.js"></script>
+    <script src="js/Algorithm.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html> 

@@ -1,0 +1,141 @@
+.grid-container {
+    position: relative;
+    display: inline-block;
+    margin: 20px;
+}
+
+.resize-button {
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    background-color: #4CAF50;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 20px;
+    transition: background-color 0.3s;
+    z-index: 1;
+}
+
+.resize-button:hover {
+    background-color: #45a049;
+}
+
+.resize-button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+.resize-button.top {
+    top: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.resize-button.bottom {
+    bottom: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.resize-button.left {
+    left: -15px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.resize-button.right {
+    right: -15px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+#grid {
+    display: grid;
+    gap: 1px;
+    background-color: #ccc;
+    padding: 1px;
+    border: 1px solid #999;
+}
+
+.cell {
+    width: 30px;
+    height: 30px;
+    background-color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    user-select: none;
+}
+
+.cell.start {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.cell.end {
+    background-color: #f44336;
+    color: white;
+}
+
+.cell.wall {
+    background-color: #333;
+    color: white;
+}
+
+.cell.visited {
+    background-color: #2196F3;
+    animation: visited 0.5s ease-in-out;
+}
+
+.cell.path {
+    background-color: #FFD700;
+    animation: path 0.5s ease-in-out;
+}
+
+@keyframes visited {
+    0% { background-color: white; }
+    50% { background-color: #64B5F6; }
+    100% { background-color: #2196F3; }
+}
+
+@keyframes path {
+    0% { background-color: #2196F3; }
+    50% { background-color: #FFEB3B; }
+    100% { background-color: #FFD700; }
+}
+
+.controls {
+    margin: 20px;
+    display: flex;
+    gap: 10px;
+}
+
+button {
+    padding: 8px 16px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+select {
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+} 
