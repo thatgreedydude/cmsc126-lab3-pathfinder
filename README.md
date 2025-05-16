@@ -35,7 +35,7 @@ The application is built using vanilla JavaScript and implements:
 ## File Structure
 
 - `index.html` - Main HTML file
-- `styles.css` - Styling
+- `css/style.css` - Styling
 - `js/`
   - `Node.js` - Node class for grid cells
   - `Grid.js` - Grid management
@@ -46,6 +46,6 @@ The application is built using vanilla JavaScript and implements:
 
 - Add more pathfinding algorithms (A*, Breadth-First Search)
 - Implement weighted nodes
-- Add grid resizing functionality
+- Add grid resizing functionality (done)
 - Save/load grid configurations
 - Add touch support for mobile devices

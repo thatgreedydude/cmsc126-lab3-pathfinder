@@ -14,86 +14,90 @@ class Algorithm {
         this.speed = speed;
     }
 
+    cancelSearch() {
+        this.isCancelled = true;
+    }
+
     async dijkstra() {
         this.isCancelled = false;
         const startNode = this.grid.getStartNode();
         const endNode = this.grid.getEndNode();
 
         if (!startNode || !endNode) {
+            console.log('Start or end node not set');
             return null;
         }
 
         // Initialize distances
-        const distances = {};
-        const unvisitedNodes = [];
-        
-        // Set all nodes to infinity distance except start node
-        for (let row = 0; row < this.grid.rows; row++) {
-            for (let col = 0; col < this.grid.cols; col++) {
-                const node = this.grid.getNode(row, col);
-                distances[`${row}-${col}`] = Infinity;
-                unvisitedNodes.push(node);
-            }
-        }
-        
-        // Set start node distance to 0
-        distances[`${startNode.row}-${startNode.col}`] = 0;
-        startNode.distance = 0;
+        const distances = new Map();
+        const unvisited = new Set();
+        this.grid.grid.forEach(row => {
+            row.forEach(node => {
+                distances.set(node, Infinity);
+                unvisited.add(node);
+            });
+        });
+        distances.set(startNode, 0);
 
-        while (unvisitedNodes.length > 0 && !this.isCancelled) {
-            // Sort unvisited nodes by distance
-            unvisitedNodes.sort((a, b) => distances[`${a.row}-${a.col}`] - distances[`${b.row}-${b.col}`]);
-            
-            // Get closest node
-            const currentNode = unvisitedNodes.shift();
-            
-            // If we can't reach the current node, we're done
-            if (distances[`${currentNode.row}-${currentNode.col}`] === Infinity) {
+        while (unvisited.size > 0 && !this.isCancelled) {
+            // Find unvisited node with smallest distance
+            let currentNode = null;
+            let smallestDistance = Infinity;
+            for (const node of unvisited) {
+                if (distances.get(node) < smallestDistance) {
+                    smallestDistance = distances.get(node);
+                    currentNode = node;
+                }
+            }
+
+            if (currentNode === null || smallestDistance === Infinity) {
+                console.log('No path exists');
                 return null;
             }
-            
-            // If we found the end node, we're done
+
             if (currentNode === endNode) {
+                console.log('Found end node');
                 return this.reconstructPath(endNode);
             }
-            
-            // Mark current node as visited
-            if (currentNode !== startNode && currentNode !== endNode) {
-                currentNode.setVisited();
-                await new Promise(resolve => setTimeout(resolve, this.speedMap[this.speed]));
-            }
-            
-            // Check all neighbors
+
+            unvisited.delete(currentNode);
+            currentNode.setVisited();
+            await new Promise(resolve => setTimeout(resolve, this.speedMap[this.speed]));
+
+            // Update distances to neighbors
             const neighbors = currentNode.getNeighbors(this.grid.grid);
             for (const neighbor of neighbors) {
-                const distance = distances[`${currentNode.row}-${currentNode.col}`] + 1;
-                
-                if (distance < distances[`${neighbor.row}-${neighbor.col}`]) {
-                    distances[`${neighbor.row}-${neighbor.col}`] = distance;
-                    neighbor.distance = distance;
-                    neighbor.previousNode = currentNode;
+                if (unvisited.has(neighbor)) {
+                    // Use the node's weight in distance calculation
+                    const weight = window.isWeightMode ? neighbor.weight : 1;
+                    const distance = distances.get(currentNode) + weight;
+                    
+                    if (distance < distances.get(neighbor)) {
+                        distances.set(neighbor, distance);
+                        neighbor.previousNode = currentNode;
+                    }
                 }
             }
         }
 
-        return this.isCancelled ? null : this.reconstructPath(endNode);
-    }
+        if (this.isCancelled) {
+            console.log('Search cancelled');
+            return null;
+        }
 
-    cancelSearch() {
-        this.isCancelled = true;
+        console.log('No path found');
+        return null;
     }
 
     reconstructPath(endNode) {
-        if (this.isCancelled) return null;
-        
         const path = [];
         let currentNode = endNode;
-        
-        while (currentNode) {
+
+        while (currentNode !== null) {
             path.unshift(currentNode);
             currentNode = currentNode.previousNode;
         }
-        
+
         return path;
     }
 

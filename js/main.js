@@ -11,7 +11,12 @@ window.addEventListener('load', () => {
     let lastUpdateTime = 0;
     let isPathfinding = false;
     let isPathDisplayed = false;
+    let isWeightMode = false;
+    let isHolding = false;
     const UPDATE_THRESHOLD = 16; // ~60fps
+
+    // Make isWeightMode accessible to Node class
+    window.isWeightMode = false;
 
     // Set default start and end positions
     debug('Setting default positions');
@@ -27,10 +32,12 @@ window.addEventListener('load', () => {
     const addBottomRowBtn = document.getElementById('addBottomRow');
     const addLeftColBtn = document.getElementById('addLeftCol');
     const addRightColBtn = document.getElementById('addRightCol');
+    const weightToggle = document.getElementById('weightToggle');
 
     // Verify elements exist
     if (!findPathBtn || !returnDefaultBtn || !speedSelect || !gridElement || 
-        !addTopRowBtn || !addBottomRowBtn || !addLeftColBtn || !addRightColBtn) {
+        !addTopRowBtn || !addBottomRowBtn || !addLeftColBtn || !addRightColBtn ||
+        !weightToggle) {
         console.error('Required elements not found');
         return;
     }
@@ -56,7 +63,20 @@ window.addEventListener('load', () => {
         addBottomRowBtn.disabled = !isEditable;
         addLeftColBtn.disabled = !isEditable;
         addRightColBtn.disabled = !isEditable;
+        weightToggle.disabled = !isEditable;
     }
+
+    // Weight toggle handler
+    weightToggle.addEventListener('change', (e) => {
+        isWeightMode = e.target.checked;
+        window.isWeightMode = isWeightMode;
+        // Update all cells to show/hide their weights
+        grid.grid.forEach(row => {
+            row.forEach(node => {
+                node.updateElement();
+            });
+        });
+    });
 
     // Find Path button
     findPathBtn.addEventListener('click', async () => {
@@ -107,6 +127,8 @@ window.addEventListener('load', () => {
             grid.reset();
             grid.setStartNode(0, 0);
             grid.setEndNode(9, 9);
+            weightToggle.checked = false;
+            isWeightMode = false;
         }
         updateButtonState();
     });
@@ -141,8 +163,8 @@ window.addEventListener('load', () => {
         }
     });
 
-    // Click handler for walls
-    gridElement.addEventListener('click', (e) => {
+    // Mouse down handler for walls and weight increment
+    gridElement.addEventListener('mousedown', (e) => {
         if (isPathfinding || isPathDisplayed) return;
         
         const cell = e.target;
@@ -153,7 +175,53 @@ window.addEventListener('load', () => {
         const node = grid.getNode(row, col);
 
         if (!node.isStart && !node.isEnd) {
-            node.setWall();
+            if (isWeightMode && !node.isWall) {
+                // Start holding behavior with acceleration
+                isHolding = true;
+                let holdTime = 0;
+                let lastIncrement = 0;
+                let interval = 200; // Start with 200ms interval
+                const minInterval = 50; // Fastest increment (50ms)
+                const acceleration = 0.95; // How quickly the interval decreases
+                let hasIncremented = false; // Track if we've done the initial increment
+
+                let weightInterval = setInterval(() => {
+                    const now = performance.now();
+                    holdTime = now - lastIncrement;
+
+                    if (holdTime >= interval) {
+                        if (node.weight < 20) {
+                            node.setWeight(node.weight + 1);
+                            lastIncrement = now;
+                            // Decrease interval (make it faster) but not below minInterval
+                            interval = Math.max(minInterval, interval * acceleration);
+                            hasIncremented = true;
+                        } else {
+                            // When weight reaches 20, make it a wall
+                            clearInterval(weightInterval);
+                            node.setWall();
+                            isHolding = false;
+                        }
+                    }
+                }, 16); // Check every 16ms for smooth updates
+
+                // Clear interval on mouse up
+                const clearWeightInterval = () => {
+                    clearInterval(weightInterval);
+                    isHolding = false;
+                    // If we haven't incremented yet (quick click), increment once
+                    if (!hasIncremented && node.weight < 20) {
+                        node.setWeight(node.weight + 1);
+                    } else if (!hasIncremented && node.weight >= 20) {
+                        node.setWall();
+                    }
+                    document.removeEventListener('mouseup', clearWeightInterval);
+                };
+                document.addEventListener('mouseup', clearWeightInterval);
+            } else {
+                // Toggle wall immediately on mousedown
+                node.setWall();
+            }
         }
     });
 

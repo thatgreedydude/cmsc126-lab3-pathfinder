@@ -10,6 +10,7 @@ class Node {
         this.distance = Infinity;
         this.previousNode = null;
         this.element = null;
+        this.weight = 1;
     }
 
     reset() {
@@ -20,6 +21,7 @@ class Node {
         this.isPath = false;
         this.distance = Infinity;
         this.previousNode = null;
+        this.weight = 1;
         this.updateElement();
     }
 
@@ -46,6 +48,7 @@ class Node {
             this.isWall = !this.isWall;
             this.isVisited = false;
             this.isPath = false;
+            this.weight = 1;
             this.updateElement();
         }
     }
@@ -66,12 +69,20 @@ class Node {
         }
     }
 
+    setWeight(weight) {
+        if (!this.isStart && !this.isEnd && !this.isWall) {
+            this.weight = Math.max(1, Math.min(20, weight));
+            this.updateElement();
+        }
+    }
+
     updateElement() {
         if (!this.element) return;
 
         // Reset classes and content
         this.element.className = 'cell';
         this.element.textContent = '';
+        this.element.innerHTML = '';
 
         // Add appropriate classes and content
         if (this.isStart) {
@@ -87,6 +98,14 @@ class Node {
             this.element.classList.add('path');
         } else if (this.isVisited) {
             this.element.classList.add('visited');
+        }
+
+        // Show weight value if weight mode is on and not start/end
+        if (window.isWeightMode && !this.isStart && !this.isEnd) {
+            const weightValue = document.createElement('span');
+            weightValue.className = 'weight-value';
+            weightValue.textContent = this.weight;
+            this.element.appendChild(weightValue);
         }
     }
 
