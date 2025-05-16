@@ -1,10 +1,10 @@
-// Dijkstra's Algorithm implementation as a function
+// Dijkstra's Algorithm
+
 export async function dijkstra(grid, speed, speedMap, cancelCheck) {
-    // This is a refactor of the previous Algorithm.dijkstra method
     // grid: Grid instance
     // speed: string ("slow", "medium", "fast")
     // speedMap: object mapping speed to ms
-    // cancelCheck: function that returns true if search should be cancelled
+    // cancelCheck: function -> returns true if search should be cancelled
 
     const startNode = grid.getStartNode();
     const endNode = grid.getEndNode();
@@ -29,7 +29,6 @@ export async function dijkstra(grid, speed, speedMap, cancelCheck) {
 
     while (unvisited.size > 0) {
         if (cancelCheck && cancelCheck()) return null;
-        // Find unvisited node with smallest distance
         let currentNode = null;
         let minDistance = Infinity;
         for (const node of unvisited) {
@@ -39,13 +38,12 @@ export async function dijkstra(grid, speed, speedMap, cancelCheck) {
             }
         }
         if (!currentNode || minDistance === Infinity) {
-            return null; // No path
+            return null;
         }
         unvisited.delete(currentNode);
         currentNode.isVisited = true;
         currentNode.updateElement();
         if (currentNode === endNode) {
-            // Reconstruct path
             const path = [];
             let node = endNode;
             while (node) {
@@ -54,7 +52,6 @@ export async function dijkstra(grid, speed, speedMap, cancelCheck) {
             }
             return path;
         }
-        // Visit neighbors
         const neighbors = currentNode.getNeighbors(grid.grid);
         for (const neighbor of neighbors) {
             if (unvisited.has(neighbor)) {
@@ -66,7 +63,6 @@ export async function dijkstra(grid, speed, speedMap, cancelCheck) {
                 }
             }
         }
-        // Animation delay
         await new Promise(resolve => setTimeout(resolve, speedMap[speed]));
     }
     return null;

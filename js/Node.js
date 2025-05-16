@@ -79,12 +79,10 @@ export class Node {
     updateElement() {
         if (!this.element) return;
 
-        // Reset classes and content
         this.element.className = 'cell';
         this.element.textContent = '';
         this.element.innerHTML = '';
 
-        // Add appropriate classes and content
         if (this.isStart) {
             this.element.classList.add('start', 'draggable');
             this.element.textContent = 'S';
@@ -100,7 +98,6 @@ export class Node {
             this.element.classList.add('visited');
         }
 
-        // Show weight value if weight mode is on and not start/end/wall
         if (window.isWeightMode && !this.isStart && !this.isEnd && !this.isWall) {
             const weightValue = document.createElement('span');
             weightValue.className = 'weight-value';
@@ -113,11 +110,10 @@ export class Node {
         const neighbors = [];
         const { row, col } = this;
         
-        // Check all four directions
-        if (row > 0) neighbors.push(grid[row - 1][col]); // Up
-        if (row < grid.length - 1) neighbors.push(grid[row + 1][col]); // Down
-        if (col > 0) neighbors.push(grid[row][col - 1]); // Left
-        if (col < grid[0].length - 1) neighbors.push(grid[row][col + 1]); // Right
+        if (row > 0) neighbors.push(grid[row - 1][col]);
+        if (row < grid.length - 1) neighbors.push(grid[row + 1][col]);
+        if (col > 0) neighbors.push(grid[row][col - 1]);
+        if (col < grid[0].length - 1) neighbors.push(grid[row][col + 1]);
 
         return neighbors.filter(neighbor => !neighbor.isWall);
     }

@@ -1,9 +1,10 @@
-// A* Search Algorithm implementation as a function
+// A* Search Algorithm
+
 export async function astar(grid, speed, speedMap, cancelCheck) {
     // grid: Grid instance
     // speed: string ("slow", "medium", "fast")
     // speedMap: object mapping speed to ms
-    // cancelCheck: function that returns true if search should be cancelled
+    // cancelCheck: function -> returns true if search should be cancelled
 
     const startNode = grid.getStartNode();
     const endNode = grid.getEndNode();
@@ -13,7 +14,6 @@ export async function astar(grid, speed, speedMap, cancelCheck) {
     }
 
     function heuristic(a, b) {
-        // Manhattan distance
         return Math.abs(a.row - b.row) + Math.abs(a.col - b.col);
     }
 
@@ -32,13 +32,13 @@ export async function astar(grid, speed, speedMap, cancelCheck) {
             node.previousNode = null;
         }
     }
+
     gScore.set(startNode, 0);
     fScore.set(startNode, heuristic(startNode, endNode));
     openSet.add(startNode);
 
     while (openSet.size > 0) {
         if (cancelCheck && cancelCheck()) return null;
-        // Find node in openSet with lowest fScore
         let currentNode = null;
         let minF = Infinity;
         for (const node of openSet) {
@@ -49,7 +49,6 @@ export async function astar(grid, speed, speedMap, cancelCheck) {
         }
         if (!currentNode) return null;
         if (currentNode === endNode) {
-            // Reconstruct path
             const path = [];
             let node = endNode;
             while (node) {
@@ -74,7 +73,6 @@ export async function astar(grid, speed, speedMap, cancelCheck) {
                 }
             }
         }
-        // Animation delay
         await new Promise(resolve => setTimeout(resolve, speedMap[speed]));
     }
     return null;
