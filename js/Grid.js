@@ -1,4 +1,6 @@
-class Grid {
+import { Node } from './Node.js';
+
+export class Grid {
     constructor(rows = 10, cols = 10) {
         this.rows = rows;
         this.cols = cols;

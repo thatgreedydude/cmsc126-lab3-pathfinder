@@ -28,6 +28,13 @@
                     </label>
                     <label for="weightToggle">Weighted Nodes</label>
                 </div>
+                <div class="algorithm-control">
+                    <label for="algorithmSelect">Algorithm:</label>
+                    <select id="algorithmSelect">
+                        <option value="dijkstra">Dijkstra's Algorithm</option>
+                        <option value="astar">A* Search</option>
+                    </select>
+                </div>
                 <div class="save-load-controls">
                     <button id="saveGridBtn" class="btn">Save Grid</button>
                     <button id="loadGridBtn" class="btn">Load Grid</button>
@@ -61,9 +68,6 @@
             }
         }
     </script>
-    <script src="js/Node.js"></script>
-    <script src="js/Grid.js"></script>
-    <script src="js/Algorithm.js"></script>
-    <script src="js/main.js"></script>
+    <script type="module" src="js/main.js"></script>
 </body>
 </html> 

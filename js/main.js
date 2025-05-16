@@ -1,3 +1,6 @@
+import { Grid } from './Grid.js';
+import { Algorithm } from './Algorithm.js';
+
 // Wait for the DOM to be fully loaded
 window.addEventListener('load', () => {
     debug('Window loaded');
@@ -36,11 +39,12 @@ window.addEventListener('load', () => {
     const saveGridBtn = document.getElementById('saveGridBtn');
     const loadGridBtn = document.getElementById('loadGridBtn');
     const gridFileInput = document.getElementById('gridFileInput');
+    const algorithmSelect = document.getElementById('algorithmSelect');
 
     // Verify elements exist
     if (!findPathBtn || !returnDefaultBtn || !speedSelect || !gridElement || 
         !addTopRowBtn || !addBottomRowBtn || !addLeftColBtn || !addRightColBtn ||
-        !weightToggle || !saveGridBtn || !loadGridBtn || !gridFileInput) {
+        !weightToggle || !saveGridBtn || !loadGridBtn || !gridFileInput || !algorithmSelect) {
         console.error('Required elements not found');
         return;
     }
@@ -90,7 +94,8 @@ window.addEventListener('load', () => {
         updateButtonState();
         
         grid.clearPath();
-        const path = await algorithm.dijkstra();
+        const selectedAlgorithm = algorithmSelect ? algorithmSelect.value : 'dijkstra';
+        const path = await algorithm.findPath(selectedAlgorithm);
         
         if (path && path.length > 0) {
             isPathDisplayed = true;

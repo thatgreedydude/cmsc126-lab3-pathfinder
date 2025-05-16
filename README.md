@@ -1,6 +1,6 @@
 # Pathfinding Visualizer
 
-An interactive web application that visualizes various pathfinding algorithms with support for weighted nodes and dynamic grid resizing.
+An interactive web application for visualizing pathfinding algorithms (Dijkstra's Algorithm, A* Search) on a dynamic grid. Users can set obstacles, define start/end points, adjust node weights, resize the grid, and save/load grid configurations.
 
 ## Features
 
@@ -53,53 +53,43 @@ An interactive web application that visualizes various pathfinding algorithms wi
 
 1. **Basic Setup**
    - Start and end nodes are placed at (0,0) and (9,9) by default
-   - Drag start/end nodes to reposition them
-   - Click cells to toggle walls
+   - Drag the start (green cell with S) and end (red cell with E) nodes to reposition them
+   - Click on empty cells to toggle walls (black cell with X).
 
-2. **Using Weighted Nodes**
-   - Toggle "Weighted Nodes" switch to enable weight mode
-   - Click cells to increment their weight
-   - Click and hold to increment with acceleration
-   - Weights affect pathfinding when enabled
-   - At weight 20, cell becomes a wall
+3. **Weighted Nodes**:
+   - Toggle the "Weighted Nodes" switch to enable/disable weight mode.
+   - In weight mode, click or hold on a cell to increase its weight (orange, 1-20). At 20, the cell becomes a wall.
+   - Start, end, and wall cells never display a weight value.
 
-3. **Resizing the Grid**
-   - Use + buttons on any side to add rows/columns
-   - Grid maintains existing nodes and walls
-   - Resizing is disabled during pathfinding
+4. **Resize Grid**: Use the + buttons around the grid to add rows/columns.
 
-4. **Finding Paths**
-   - Click "Find Path" to start pathfinding
-   - Blue cells show visited nodes
-   - Yellow cells show the optimal path
-   - Use "Return Default" to:
-     - Cancel during pathfinding
-     - Clear path after finding
-     - Reset grid to default
+5. **Find Path**: Click "Find Path" to visualize the shortest path.
 
-5. **Adjusting Speed**
-   - Use the speed dropdown to change visualization speed
-   - Options: Slow, Medium, Fast
+6. **Reset**: Click "Return Default" to reset to a 10x10 empty grid with start at (0,0) and end at (9,9).
+
+### Save/Load Grids
+- **Save Grid**: Click "Save Grid" to download the current grid as a JSON file.
+- **Load Grid**: Click "Load Grid" and select a previously saved JSON file to restore the grid.
+- The application robustly handles any grid size and restores all node states (start, end, walls, weights).
+- When loading a grid with weighted cells, the weight toggle is automatically enabled and weights are shown. If no weighted cells are present, the toggle is off and weights are hidden.
+
+### Weight Toggle & Display Behavior
+- When weight mode is **on**, all non-wall, non-start, non-end cells display their weight value.
+- When weight mode is **off**, all weight values are hidden.
+- Loading a grid with weighted cells turns the toggle on and shows weights; loading a grid without weighted cells turns the toggle off and hides weights.
+- Resetting the grid always returns to a 10x10 grid with no weights or walls.
+
+### Error Handling & Robustness
+- The application prevents grid corruption when loading grids of any size.
+- Start and end nodes are always restored to their correct positions after loading.
+- Adding rows/columns in weight mode immediately displays weights for new cells.
+- All controls are disabled during pathfinding to prevent accidental edits.
 
 ## Technical Details
+- **Tech stack**: Vanilla JavaScript, CSS Grid, HTML5
+- **Algorithm**: Dijkstra's Algorithm (with support for weighted nodes)
+- **Grid state**: Saved as JSON, including size, start/end, walls, and weights
+- **Browser support**: Modern browsers (Chrome, Firefox, Edge, Safari)
 
-- Built with vanilla JavaScript
-- Uses CSS Grid for layout
-- Implements Dijkstra's algorithm for pathfinding
-- Supports dynamic grid resizing
-- Features smooth weight incrementing with acceleration
-- Maintains state during grid modifications
-
-## Browser Support
-
-Works best in modern browsers that support:
-- CSS Grid
-- ES6+ JavaScript features
-- CSS Animations
-
-## Additional Features
-
-- Save/load grid configurations (in progress)
-- More pathfinding algorithms
-    - A*
-    - Breadth-First Search
+## License
+MIT

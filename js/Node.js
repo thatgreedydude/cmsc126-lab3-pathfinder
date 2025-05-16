@@ -1,4 +1,4 @@
-class Node {
+export class Node {
     constructor(row, col) {
         this.row = row;
         this.col = col;
