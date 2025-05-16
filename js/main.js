@@ -33,11 +33,14 @@ window.addEventListener('load', () => {
     const addLeftColBtn = document.getElementById('addLeftCol');
     const addRightColBtn = document.getElementById('addRightCol');
     const weightToggle = document.getElementById('weightToggle');
+    const saveGridBtn = document.getElementById('saveGridBtn');
+    const loadGridBtn = document.getElementById('loadGridBtn');
+    const gridFileInput = document.getElementById('gridFileInput');
 
     // Verify elements exist
     if (!findPathBtn || !returnDefaultBtn || !speedSelect || !gridElement || 
         !addTopRowBtn || !addBottomRowBtn || !addLeftColBtn || !addRightColBtn ||
-        !weightToggle) {
+        !weightToggle || !saveGridBtn || !loadGridBtn || !gridFileInput) {
         console.error('Required elements not found');
         return;
     }
@@ -313,6 +316,53 @@ window.addEventListener('load', () => {
         isDragging = false;
         draggedNode = null;
         originalPosition = null;
+    });
+
+    // Save grid handler
+    saveGridBtn.addEventListener('click', () => {
+        if (isPathfinding || isPathDisplayed) return;
+
+        const gridState = grid.saveToJSON();
+        const blob = new Blob([gridState], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `grid_${new Date().toISOString().slice(0, 19).replace(/[:]/g, '-')}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    });
+
+    // Load grid handler
+    loadGridBtn.addEventListener('click', () => {
+        if (isPathfinding || isPathDisplayed) return;
+        gridFileInput.click();
+    });
+
+    gridFileInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const success = grid.loadFromJSON(event.target.result);
+                if (success) {
+                    // Update weight mode if needed
+                    const hasWeights = grid.grid.some(row => 
+                        row.some(node => node.weight > 1)
+                    );
+                    if (hasWeights) {
+                        weightToggle.checked = true;
+                        isWeightMode = true;
+                        window.isWeightMode = true;
+                    }
+                } else {
+                    alert('Error loading grid file');
+                }
+            };
+            reader.readAsText(file);
+        }
     });
 
     // Initialize button state

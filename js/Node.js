@@ -100,8 +100,8 @@ class Node {
             this.element.classList.add('visited');
         }
 
-        // Show weight value if weight mode is on and not start/end
-        if (window.isWeightMode && !this.isStart && !this.isEnd) {
+        // Show weight value if weight mode is on and not start/end/wall
+        if (window.isWeightMode && !this.isStart && !this.isEnd && !this.isWall) {
             const weightValue = document.createElement('span');
             weightValue.className = 'weight-value';
             weightValue.textContent = this.weight;

@@ -17,6 +17,7 @@ class Grid {
 
         gridElement.style.gridTemplateColumns = `repeat(${this.cols}, 1fr)`;
         gridElement.innerHTML = '';
+        this.grid = [];
 
         for (let row = 0; row < this.rows; row++) {
             const currentRow = [];
@@ -81,11 +82,16 @@ class Grid {
         }
 
         this.rows++;
+
+        // If weight mode is on, update only new row's node elements
+        if (window.isWeightMode) {
+            newRow.forEach(node => node.updateElement());
+        }
     }
 
     addColumn(position) {
         const colIndex = position === 'left' ? 0 : this.cols;
-        
+        const newNodes = [];
         // Add new column to each row
         for (let row = 0; row < this.rows; row++) {
             const node = new Node(row, colIndex);
@@ -94,7 +100,7 @@ class Grid {
             cell.dataset.row = row;
             cell.dataset.col = colIndex;
             node.element = cell;
-            
+            newNodes.push(node);
             if (position === 'left') {
                 this.grid[row].unshift(node);
                 // Update column indices for all nodes
@@ -130,15 +136,24 @@ class Grid {
         }
 
         this.cols++;
+
+        // If weight mode is on, update only new column's node elements
+        if (window.isWeightMode) {
+            newNodes.forEach(node => node.updateElement());
+        }
     }
 
     reset() {
-        // Reset to default size
+        // Reset to default size and clear the grid and DOM
         this.rows = 10;
         this.cols = 10;
         this.grid = [];
         this.startNode = null;
         this.endNode = null;
+        const gridElement = document.getElementById('grid');
+        if (gridElement) {
+            gridElement.innerHTML = '';
+        }
         this.initializeGrid();
     }
 
@@ -191,6 +206,153 @@ class Grid {
 
     getEndNode() {
         return this.endNode;
+    }
+
+    // Save grid state to JSON
+    saveToJSON() {
+        const gridState = {
+            rows: this.rows,
+            cols: this.cols,
+            nodes: []
+        };
+
+        // Save each node's state
+        this.grid.forEach((row, rowIndex) => {
+            row.forEach((node, colIndex) => {
+                if (node.isStart || node.isEnd || node.isWall || node.weight > 1) {
+                    gridState.nodes.push({
+                        row: rowIndex,
+                        col: colIndex,
+                        isStart: node.isStart,
+                        isEnd: node.isEnd,
+                        isWall: node.isWall,
+                        weight: node.weight
+                    });
+                }
+            });
+        });
+
+        return JSON.stringify(gridState, null, 2);
+    }
+
+    // Load grid state from JSON
+    loadFromJSON(jsonString) {
+        try {
+            const gridState = JSON.parse(jsonString);
+            
+            // Reset current grid (clear only)
+            this.reset();
+            
+            // Set grid dimensions from file BEFORE initializing
+            this.rows = gridState.rows;
+            this.cols = gridState.cols;
+            this.initializeGrid();
+
+            // Clear start/end references
+            this.startNode = null;
+            this.endNode = null;
+
+            // Track start/end positions
+            let startPos = null;
+            let endPos = null;
+
+            // First restore wall and weight states, and track start/end positions
+            gridState.nodes.forEach(nodeState => {
+                const node = this.getNode(nodeState.row, nodeState.col);
+                if (node) {
+                    if (nodeState.isWall) node.setWall();
+                    if (nodeState.weight > 1) node.setWeight(nodeState.weight);
+                }
+                if (nodeState.isStart) startPos = { row: nodeState.row, col: nodeState.col };
+                if (nodeState.isEnd) endPos = { row: nodeState.row, col: nodeState.col };
+            });
+
+            // Now set start/end nodes using the correct method, with bounds checking
+            if (startPos && this.isValidPosition(startPos.row, startPos.col)) {
+                this.setStartNode(startPos.row, startPos.col);
+                if (typeof debug === 'function') debug('Set start node at ' + startPos.row + ',' + startPos.col);
+            } else if (startPos) {
+                if (typeof debug === 'function') debug('Invalid start node position: ' + JSON.stringify(startPos));
+            }
+            if (endPos && this.isValidPosition(endPos.row, endPos.col)) {
+                this.setEndNode(endPos.row, endPos.col);
+                if (typeof debug === 'function') debug('Set end node at ' + endPos.row + ',' + endPos.col);
+            } else if (endPos) {
+                if (typeof debug === 'function') debug('Invalid end node position: ' + JSON.stringify(endPos));
+            }
+
+            // Always update all node elements after loading
+            this.grid.forEach(row => {
+                row.forEach(node => node.updateElement());
+            });
+
+            // If any node has weight > 1, enable weight mode and update all elements
+            const hasWeights = this.grid.some(row => row.some(node => node.weight > 1));
+            if (hasWeights) {
+                if (typeof window !== 'undefined') {
+                    const weightToggle = document.getElementById('weightToggle');
+                    if (weightToggle) weightToggle.checked = true;
+                    window.isWeightMode = true;
+                }
+                this.grid.forEach(row => {
+                    row.forEach(node => node.updateElement());
+                });
+            } else {
+                if (typeof window !== 'undefined') {
+                    const weightToggle = document.getElementById('weightToggle');
+                    if (weightToggle) weightToggle.checked = false;
+                    window.isWeightMode = false;
+                }
+                // Ensure all node elements are updated to hide weight values
+                this.grid.forEach(row => {
+                    row.forEach(node => node.updateElement());
+                });
+            }
+
+            return true;
+        } catch (error) {
+            console.error('Error loading grid:', error);
+            if (typeof debug === 'function') debug('Error loading grid: ' + error);
+            return false;
+        }
+    }
+
+    // Save to local storage
+    saveToLocalStorage(name) {
+        try {
+            const gridState = this.saveToJSON();
+            localStorage.setItem(`grid_${name}`, gridState);
+            return true;
+        } catch (error) {
+            console.error('Error saving to local storage:', error);
+            return false;
+        }
+    }
+
+    // Load from local storage
+    loadFromLocalStorage(name) {
+        try {
+            const gridState = localStorage.getItem(`grid_${name}`);
+            if (gridState) {
+                return this.loadFromJSON(gridState);
+            }
+            return false;
+        } catch (error) {
+            console.error('Error loading from local storage:', error);
+            return false;
+        }
+    }
+
+    // Get list of saved grids
+    getSavedGrids() {
+        const savedGrids = [];
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key.startsWith('grid_')) {
+                savedGrids.push(key.replace('grid_', ''));
+            }
+        }
+        return savedGrids;
     }
 }
 
