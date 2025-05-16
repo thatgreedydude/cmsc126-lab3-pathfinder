@@ -1,27 +1,223 @@
-.grid-container {
+body.parchment-bg {
+    background: #f6ecd9 url('https://www.transparenttextures.com/patterns/old-mathematics.png');
+    font-family: 'Merriweather', serif;
+    min-height: 100vh;
+    margin: 0;
+}
+
+.title {
+    font-family: 'Cinzel', serif;
+    font-size: 2.5rem;
+    color: #7c5c27;
+    letter-spacing: 2px;
+    margin: 32px 0 16px 0;
+    text-shadow: 1px 1px 0 #e2c48d, 2px 2px 0 #fffbe6;
+}
+
+.container.main-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-left: 260px;
+    transition: margin-left 0.3s;
+}
+
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 250px;
+    height: 100vh;
+    background: #f3e3c3 url('https://www.transparenttextures.com/patterns/old-mathematics.png');
+    box-shadow: 2px 0 16px #bfa76a55;
+    z-index: 2000;
+    padding: 24px 16px 16px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    border-right: 3px solid #bfa76a;
+    transition: left 0.3s, box-shadow 0.3s;
+}
+
+.sidebar.closed {
+    left: -250px;
+    box-shadow: none;
+}
+
+.sidebar-toggle {
+    position: absolute;
+    top: 32px;
+    right: -36px;
+    width: 64px;
+    height: 64px;
+    background: none;
+    border: none;
+    padding: 0;
+    z-index: 2100;
+    cursor: pointer;
+    outline: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px #bfa76a55;
+    border-radius: 50%;
+    transition: filter 0.2s;
+}
+.sidebar-toggle svg {
+    display: block;
+    border-radius: 50%;
+}
+.sidebar-toggle:focus,
+.sidebar-toggle:hover {
+    background: none !important;
+    outline: none;
+    box-shadow: none;
+}
+.sidebar-toggle:focus svg circle,
+.sidebar-toggle:hover svg circle {
+    filter: brightness(1.15) drop-shadow(0 2px 8px #e2c48d88);
+    stroke: #ffe066;
+}
+
+.sidebar-content {
+    margin-top: 64px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.sidebar.closed .sidebar-content {
+    display: none !important;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.grid-center-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: 24px;
+}
+
+.grid-tools-row {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 8px;
+}
+
+.grid-tools-right {
+    display: flex;
+    gap: 12px;
+}
+
+.grid-container.parchment-panel {
+    background: #fffbe6 url('https://www.transparenttextures.com/patterns/old-mathematics.png');
+    border-radius: 18px;
+    box-shadow: 0 4px 32px #bfa76a55, 0 1.5px 0 #bfa76a;
+    padding: 32px 32px 24px 32px;
+    margin-bottom: 12px;
     position: relative;
-    display: inline-block;
-    margin: 20px;
+    min-width: 420px;
+    min-height: 420px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#grid {
+    display: grid;
+    gap: 1px;
+    background-color: #bfa76a;
+    padding: 1px;
+    border-radius: 12px;
+    border: 2px solid #7c5c27;
+    box-shadow: 0 2px 12px #bfa76a33;
+    transition: transform 0.2s;
+}
+
+.cell {
+    width: 36px;
+    height: 36px;
+    background-color: #fffbe6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+    border-radius: 6px;
+    font-family: 'Merriweather', serif;
+    font-size: 1.1rem;
+    border: 1px solid #e2c48d;
+    transition: background 0.2s, color 0.2s;
+}
+
+.cell.start {
+    background-color: #7cbe5a;
+    color: #fffbe6;
+    font-weight: bold;
+    border: 1px solid #3e5c1c;
+}
+
+.cell.end {
+    background-color: #d95c3c;
+    color: #fffbe6;
+    font-weight: bold;
+    border: 1px solid #7c2d1c;
+}
+
+.cell.wall {
+    background-color: #4b3b1f;
+    color: #fffbe6;
+    border: 1px solid #7c5c27;
+}
+
+.cell.visited {
+    background-color: #bfa76a;
+    animation: visited 0.5s ease-in-out;
+}
+
+.cell.path {
+    background-color: #ffe066;
+    animation: path 0.5s ease-in-out;
+}
+
+.cell.weight {
+    background-color: #e2c48d;
+}
+
+.cell .weight-value {
+    position: absolute;
+    font-size: 14px;
+    color: #7c5c27;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-weight: bold;
 }
 
 .resize-button {
     position: absolute;
-    width: 30px;
-    height: 30px;
-    background-color: #4CAF50;
-    color: white;
+    width: 36px;
+    height: 36px;
+    background-color: #7cbe5a;
+    color: #fffbe6;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    font-size: 20px;
+    font-size: 22px;
     transition: background-color 0.3s;
     z-index: 1;
+    border: 2px solid #3e5c1c;
+    box-shadow: 0 2px 8px #bfa76a33;
 }
 
 .resize-button:hover {
-    background-color: #45a049;
+    background-color: #5a8c3e;
 }
 
 .resize-button:disabled {
@@ -30,89 +226,85 @@
 }
 
 .resize-button.top {
-    top: -15px;
+    top: -18px;
     left: 50%;
     transform: translateX(-50%);
 }
 
 .resize-button.bottom {
-    bottom: -15px;
+    bottom: -18px;
     left: 50%;
     transform: translateX(-50%);
 }
 
 .resize-button.left {
-    left: -15px;
+    left: -18px;
     top: 50%;
     transform: translateY(-50%);
 }
 
 .resize-button.right {
-    right: -15px;
+    right: -18px;
     top: 50%;
     transform: translateY(-50%);
 }
 
-#grid {
-    display: grid;
-    gap: 1px;
-    background-color: #ccc;
-    padding: 1px;
-    border: 1px solid #999;
-}
+.zoom-controls, .zoom-btn { display: none !important; }
 
-.cell {
-    width: 30px;
-    height: 30px;
-    background-color: white;
+.grid-tools-right .btn svg {
+    display: block;
+    margin: 0 auto;
+    width: 26px;
+    height: 26px;
+}
+.grid-tools-right .btn {
+    padding: 8px 8px;
+    min-width: 44px;
+    min-height: 44px;
     display: flex;
     align-items: center;
     justify-content: center;
+}
+.grid-tools-right .btn:hover svg path {
+    stroke: #7c5c27;
+}
+
+button {
+    padding: 10px 20px;
+    background-color: #7cbe5a;
+    color: #fffbe6;
+    border: none;
+    border-radius: 6px;
     cursor: pointer;
-    user-select: none;
-    position: relative;
+    font-size: 1rem;
+    font-family: 'Merriweather', serif;
+    font-weight: 700;
+    box-shadow: 0 1px 4px #bfa76a33;
+    transition: background 0.2s;
 }
 
-.cell.start {
-    background-color: #4CAF50;
-    color: white;
+button.primary {
+    background-color: #d95c3c;
+}
+button.primary:hover {
+    background-color: #b23c1c;
+}
+button:hover {
+    background-color: #5a8c3e;
+}
+button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
 }
 
-.cell.end {
-    background-color: #f44336;
-    color: white;
+select, input[type="file"] {
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #bfa76a;
+    font-family: 'Merriweather', serif;
+    font-size: 1rem;
 }
 
-.cell.wall {
-    background-color: #333;
-    color: white;
-}
-
-.cell.visited {
-    background-color: #2196F3;
-    animation: visited 0.5s ease-in-out;
-}
-
-.cell.path {
-    background-color: #FFD700;
-    animation: path 0.5s ease-in-out;
-}
-
-.cell.weight {
-    background-color: #FFA500;
-}
-
-.cell .weight-value {
-    position: absolute;
-    font-size: 12px;
-    color: #333;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-weight: bold;
-}
-
-/* Toggle Switch */
 .switch {
     position: relative;
     display: inline-block;
@@ -134,7 +326,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: #ccc;
+    background-color: #bfa76a;
     transition: .4s;
 }
 
@@ -145,12 +337,12 @@
     width: 16px;
     left: 4px;
     bottom: 4px;
-    background-color: white;
+    background-color: #fffbe6;
     transition: .4s;
 }
 
 input:checked + .slider {
-    background-color: #4CAF50;
+    background-color: #7cbe5a;
 }
 
 input:checked + .slider:before {
@@ -168,57 +360,23 @@ input:checked + .slider:before {
 .weight-control {
     display: flex;
     align-items: center;
-    margin-left: 20px;
+    margin-left: 0;
 }
 
-@keyframes visited {
-    0% { background-color: white; }
-    50% { background-color: #64B5F6; }
-    100% { background-color: #2196F3; }
-}
-
-@keyframes path {
-    0% { background-color: #2196F3; }
-    50% { background-color: #FFEB3B; }
-    100% { background-color: #FFD700; }
-}
-
-.controls {
-    margin: 20px;
+.algorithm-control {
     display: flex;
-    gap: 10px;
     align-items: center;
+    margin-left: 0;
 }
 
-button {
-    padding: 8px 16px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
-}
-
-button:hover {
-    background-color: #45a049;
-}
-
-button:disabled {
-    background-color: #cccccc;
-    cursor: not-allowed;
-}
-
-select {
-    padding: 8px;
-    border-radius: 4px;
-    border: 1px solid #ccc;
+.algorithm-control label {
+    margin-right: 8px;
 }
 
 .save-load-controls {
     display: flex;
     gap: 10px;
-    margin-left: 20px;
+    margin-left: 0;
 }
 
 .save-load-controls .btn {
@@ -229,12 +387,144 @@ select {
     background-color: #1976D2;
 }
 
-.algorithm-control {
-    display: flex;
-    align-items: center;
-    margin-left: 20px;
+@keyframes visited {
+    0% { background-color: #fffbe6; }
+    50% { background-color: #e2c48d; }
+    100% { background-color: #bfa76a; }
 }
 
-.algorithm-control label {
-    margin-right: 8px;
+@keyframes path {
+    0% { background-color: #bfa76a; }
+    50% { background-color: #ffe066; }
+    100% { background-color: #ffe066; }
+}
+
+.controls, .debug, .container > header > .controls {
+    display: none !important;
+}
+
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(124, 92, 39, 0.18);
+    z-index: 1500;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+}
+.sidebar.open ~ .sidebar-overlay {
+    display: block;
+    opacity: 1;
+    pointer-events: auto;
+}
+
+@media (max-width: 700px) {
+    .sidebar {
+        width: 80vw;
+        min-width: 220px;
+        max-width: 320px;
+        left: -80vw;
+    }
+    .sidebar.closed {
+        left: -80vw;
+    }
+    .sidebar.open {
+        left: 0;
+        box-shadow: 2px 0 16px #bfa76a55;
+    }
+    .container.main-content {
+        margin-left: 0 !important;
+    }
+    .sidebar-overlay {
+        display: block;
+    }
+}
+
+.container.main-content.sidebar-closed {
+    margin-left: 0;
+}
+
+/* Ensure sidebar and toggle are always above grid */
+.sidebar, .sidebar-toggle {
+    z-index: 2000;
+}
+
+.sidebar-heading {
+    font-family: 'Cinzel', serif;
+    font-size: 1.3rem;
+    color: #7c5c27;
+    margin-bottom: 18px;
+    letter-spacing: 1px;
+    text-shadow: 1px 1px 0 #e2c48d;
+    padding-left: 2px;
+}
+
+.save-load-controls.column {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-left: 0;
+    margin-top: 10px;
+}
+
+.save-btn {
+    background: linear-gradient(90deg, #e2c48d 0%, #bfa76a 100%);
+    color: #7c5c27;
+    border: 1.5px solid #bfa76a;
+    font-family: 'Cinzel', serif;
+    font-size: 1.05rem;
+    letter-spacing: 0.5px;
+    box-shadow: 0 1px 4px #bfa76a33;
+}
+.save-btn:hover {
+    background: linear-gradient(90deg, #ffe066 0%, #e2c48d 100%);
+    color: #b23c1c;
+}
+
+.load-btn {
+    background: linear-gradient(90deg, #8fd694 0%, #7cbe5a 100%);
+    color: #fffbe6;
+    border: 1.5px solid #5a8c3e;
+    font-family: 'Cinzel', serif;
+    font-size: 1.05rem;
+    letter-spacing: 0.5px;
+    box-shadow: 0 1px 4px #7cbe5a33;
+}
+.load-btn:hover {
+    background: linear-gradient(90deg, #b2e6b8 0%, #8fd694 100%);
+    color: #7c5c27;
+}
+
+.gold-btn {
+    background: #e2c48d !important;
+    color: #7c5c27 !important;
+    border: 2px solid #bfa76a !important;
+    font-family: 'Cinzel', serif;
+    font-size: 1.1rem;
+    letter-spacing: 0.5px;
+    box-shadow: 0 1px 4px #bfa76a33;
+}
+.gold-btn:hover, .gold-btn:focus {
+    background: #ffe066 !important;
+    color: #b23c1c !important;
+    border-color: #e2c48d !important;
+}
+
+.red-btn {
+    background: #d95c3c !important;
+    color: #fffbe6 !important;
+    border: 2px solid #b23c1c !important;
+    font-family: 'Cinzel', serif;
+    font-size: 1.1rem;
+    letter-spacing: 0.5px;
+    box-shadow: 0 1px 4px #d95c3c33;
+}
+.red-btn:hover, .red-btn:focus {
+    background: #b23c1c !important;
+    color: #fffbe6 !important;
+    border-color: #d95c3c !important;
 } 

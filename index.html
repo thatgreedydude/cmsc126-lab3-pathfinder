@@ -3,71 +3,86 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pathfinding Visualizer</title>
+    <title>Pathfinder</title>
     <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css?family=Cinzel:700|Merriweather:400,700&display=swap" rel="stylesheet">
 </head>
-<body>
-    <div class="container">
+<body class="parchment-bg">
+    <div class="sidebar" id="sidebar">
+        <button id="toggleSidebar" class="sidebar-toggle" aria-label="Toggle sidebar" title="Show/Hide Tools">
+            <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="24" cy="24" r="22" fill="#bfa76a" stroke="#e2c48d" stroke-width="4"/>
+                <rect x="14" y="20" width="20" height="3" rx="1.5" fill="#fffbe6"/>
+                <rect x="14" y="25" width="20" height="3" rx="1.5" fill="#fffbe6"/>
+                <rect x="14" y="30" width="20" height="3" rx="1.5" fill="#fffbe6"/>
+            </svg>
+        </button>
+        <div class="sidebar-content">
+            <h2 class="sidebar-heading">Tools</h2>
+            <div class="speed-control">
+                <label for="speed">Speed:</label>
+                <select id="speed">
+                    <option value="slow">Slow</option>
+                    <option value="medium" selected>Medium</option>
+                    <option value="fast">Fast</option>
+                </select>
+            </div>
+            <div class="weight-control">
+                <label class="switch">
+                    <input type="checkbox" id="weightToggle">
+                    <span class="slider round"></span>
+                </label>
+                <label for="weightToggle">Weighted Nodes</label>
+            </div>
+            <div class="algorithm-control">
+                <label for="algorithmSelect">Algorithm:</label>
+                <select id="algorithmSelect">
+                    <option value="dijkstra">Dijkstra's</option>
+                    <option value="astar">A* Search</option>
+                </select>
+            </div>
+            <div class="save-load-controls column">
+                <button id="saveGridBtn" class="btn save-btn">Save Grid</button>
+                <button id="loadGridBtn" class="btn load-btn">Load Grid</button>
+                <input type="file" id="gridFileInput" accept=".json" style="display: none;">
+            </div>
+        </div>
+    </div>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <div class="container main-content">
         <header>
-            <h1>Pathfinding Visualizer</h1>
-            <div class="controls">
-                <button id="findPathBtn" class="btn primary">Find Path</button>
-                <button id="returnDefaultBtn" class="btn">Return Default</button>
-                <div class="speed-control">
-                    <label for="speed">Speed:</label>
-                    <select id="speed">
-                        <option value="slow">Slow</option>
-                        <option value="medium" selected>Medium</option>
-                        <option value="fast">Fast</option>
-                    </select>
-                </div>
-                <div class="weight-control">
-                    <label class="switch">
-                        <input type="checkbox" id="weightToggle">
-                        <span class="slider round"></span>
-                    </label>
-                    <label for="weightToggle">Weighted Nodes</label>
-                </div>
-                <div class="algorithm-control">
-                    <label for="algorithmSelect">Algorithm:</label>
-                    <select id="algorithmSelect">
-                        <option value="dijkstra">Dijkstra's Algorithm</option>
-                        <option value="astar">A* Search</option>
-                    </select>
-                </div>
-                <div class="save-load-controls">
-                    <button id="saveGridBtn" class="btn">Save Grid</button>
-                    <button id="loadGridBtn" class="btn">Load Grid</button>
-                    <input type="file" id="gridFileInput" accept=".json" style="display: none;">
+            <h1 class="title">Pathfinder</h1>
+        </header>
+        <main>
+            <div class="grid-tools-row">
+                <div class="grid-tools-right">
+                    <button id="findPathBtn" class="btn primary gold-btn" title="Find Path">
+                        <svg width="26" height="26" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="12" cy="12" r="8" stroke="#7c5c27" stroke-width="2" fill="#e2c48d"/>
+                            <rect x="18" y="18" width="6" height="2" rx="1" transform="rotate(45 18 18)" fill="#7c5c27"/>
+                            <circle cx="12" cy="12" r="4" stroke="#7c5c27" stroke-width="2" fill="none"/>
+                        </svg>
+                    </button>
+                    <button id="returnDefaultBtn" class="btn red-btn" title="Reset">
+                        <svg width="26" height="26" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="13" cy="13" r="12" stroke="#fffbe6" stroke-width="2" fill="#d95c3c"/>
+                            <path d="M8 13a5 5 0 1 1 5 5" stroke="#fffbe6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M13 8v5h5" stroke="#fffbe6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
                 </div>
             </div>
-        </header>
-        
-        <main>
-            <div class="grid-container">
-                <div class="resize-button top" id="addTopRow">+</div>
-                <div class="resize-button bottom" id="addBottomRow">+</div>
-                <div class="resize-button left" id="addLeftCol">+</div>
-                <div class="resize-button right" id="addRightCol">+</div>
-                <div id="grid" class="grid"></div>
+            <div class="grid-center-area">
+                <div class="grid-container parchment-panel">
+                    <div class="resize-button top" id="addTopRow">+</div>
+                    <div class="resize-button bottom" id="addBottomRow">+</div>
+                    <div class="resize-button left" id="addLeftCol">+</div>
+                    <div class="resize-button right" id="addRightCol">+</div>
+                    <div id="grid" class="grid"></div>
+                </div>
             </div>
         </main>
     </div>
-
-    <!-- Debug info -->
-    <div id="debug" style="display: none;"></div>
-
-    <!-- Load scripts -->
-    <script>
-        // Debug function
-        function debug(message) {
-            console.log(message);
-            const debugDiv = document.getElementById('debug');
-            if (debugDiv) {
-                debugDiv.innerHTML += message + '<br>';
-            }
-        }
-    </script>
     <script type="module" src="js/main.js"></script>
 </body>
 </html> 

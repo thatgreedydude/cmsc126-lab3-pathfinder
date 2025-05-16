@@ -3,8 +3,6 @@ import { Algorithm } from './Algorithm.js';
 
 // Wait for the DOM to be fully loaded
 window.addEventListener('load', () => {
-    debug('Window loaded');
-    
     // Initialize grid and algorithm first
     const grid = new Grid();
     const algorithm = new Algorithm(grid);
@@ -22,7 +20,6 @@ window.addEventListener('load', () => {
     window.isWeightMode = false;
 
     // Set default start and end positions
-    debug('Setting default positions');
     grid.setStartNode(0, 0);
     grid.setEndNode(9, 9);
 
@@ -49,15 +46,13 @@ window.addEventListener('load', () => {
         return;
     }
 
-    debug('All elements found, setting up event listeners...');
-
     // Function to update button state
     function updateButtonState() {
         if (isPathfinding) {
-            returnDefaultBtn.textContent = 'Cancel Search';
+            returnDefaultBtn.textContent = 'Cancel';
             returnDefaultBtn.disabled = false;
         } else if (isPathDisplayed) {
-            returnDefaultBtn.textContent = 'Clear Output';
+            returnDefaultBtn.textContent = 'Clear';
             returnDefaultBtn.disabled = false;
         } else {
             returnDefaultBtn.textContent = 'Reset';
@@ -370,8 +365,51 @@ window.addEventListener('load', () => {
         }
     });
 
+    // Sidebar toggle functionality
+    const sidebar = document.getElementById('sidebar');
+    const toggleSidebarBtn = document.getElementById('toggleSidebar');
+    const mainContent = document.querySelector('.container.main-content');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+    function openSidebar() {
+        sidebar.classList.add('open');
+        sidebar.classList.remove('closed');
+        if (sidebarOverlay) sidebarOverlay.style.display = 'block';
+    }
+    function closeSidebar() {
+        sidebar.classList.remove('open');
+        sidebar.classList.add('closed');
+        if (sidebarOverlay) sidebarOverlay.style.display = 'none';
+    }
+    if (toggleSidebarBtn && sidebar && mainContent) {
+        toggleSidebarBtn.addEventListener('click', () => {
+            if (sidebar.classList.contains('open')) {
+                closeSidebar();
+                mainContent.classList.add('sidebar-closed');
+            } else {
+                openSidebar();
+                mainContent.classList.remove('sidebar-closed');
+            }
+        });
+    }
+    if (sidebarOverlay) {
+        sidebarOverlay.addEventListener('click', () => {
+            closeSidebar();
+            mainContent.classList.add('sidebar-closed');
+        });
+    }
+    // On load, sidebar is open on desktop, closed on mobile
+    function handleSidebarOnResize() {
+        if (window.innerWidth <= 700) {
+            closeSidebar();
+            mainContent.classList.add('sidebar-closed');
+        } else {
+            openSidebar();
+            mainContent.classList.remove('sidebar-closed');
+        }
+    }
+    window.addEventListener('resize', handleSidebarOnResize);
+    handleSidebarOnResize();
+
     // Initialize button state
     updateButtonState();
-
-    debug('All event listeners set up');
 }); 
